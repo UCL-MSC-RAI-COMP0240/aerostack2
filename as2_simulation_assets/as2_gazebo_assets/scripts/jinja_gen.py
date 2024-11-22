@@ -41,6 +41,7 @@ from __future__ import annotations
 import argparse
 import os
 import shutil
+from pathlib import Path
 
 import jinja2
 
@@ -115,7 +116,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         'filename', help='file that the sdf file should be generated from')
-    parser.add_argument('env_dir')
+    parser.add_argument('env_dir', help='Comma-separated list of directories for template search paths')
     parser.add_argument('--output-file', help='sdf output file')
     parser.add_argument('--stdout', action='store_true',
                         default=False, help='dump to stdout instead of file')
@@ -131,8 +132,10 @@ def main():
     parser.add_argument('--enable_velocity_control', action='store_true',
                         help='Enable velocity control')
     args = parser.parse_args()
-    env = jinja2.Environment(loader=jinja2.FileSystemLoader(args.env_dir))
-    template = env.get_template(os.path.relpath(args.filename, args.env_dir))
+    
+    env_dir = [Path(p) for p in args.env_dir.split(',')]
+    env = jinja2.Environment(loader=jinja2.FileSystemLoader(env_dir))
+    template = env.get_template(os.path.relpath(args.filename, env_dir[0]))
 
     sensors = get_sensors(str(args.sensors).split(sep=' '))
 

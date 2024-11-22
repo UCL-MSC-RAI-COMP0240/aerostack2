@@ -221,8 +221,12 @@ class Drone(Entity):
         filename = self.get_model_jinja_template()
         # Ensure that the environment directory is the parent of the model directory
         # For instance: /path/to/models/drone_base/drone_base.sdf.jinja
-        env_dir = filename.parent.parent
+        env_dir = [str(filename.parent.parent)]
 
+        resource_path = os.environ.get('GZ_SIM_RESOURCE_PATH')
+        if resource_path:
+            env_dir += [str(Path(p).parent) for p in resource_path.split(':')]
+        
         payload = ''
         for pld in self.payload:
             if pld.payload is not None:  # Gimbal payload
@@ -251,7 +255,7 @@ class Drone(Entity):
             'python3',
             f'{jinja_script}/jinja_gen.py',
             filename,
-            env_dir,
+            ",".join(env_dir),
             '--namespace',
             f'{self.model_name}',
             '--sensors',
