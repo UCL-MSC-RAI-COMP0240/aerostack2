@@ -131,6 +131,8 @@ def main():
                         help='Enable battery plugin on model with given capacity')
     parser.add_argument('--enable_velocity_control', action='store_true',
                         help='Enable velocity control')
+    parser.add_argument('--enable_acro_control', action='store_true',
+                        help='Enable ACRO control')
     args = parser.parse_args()
     
     env_dir = [Path(p) for p in args.env_dir.split(',')]
@@ -144,6 +146,7 @@ def main():
     dict_ = {'namespace': args.namespace, 'sensors': sensors, 'odom_plugin': args.odom,
              'battery_plugin': bool(float(args.bat_capacity)),
              'velocity_controller': args.enable_velocity_control,
+             'acro_controller': args.enable_acro_control,
              'capacity': float(args.bat_capacity), 'origin': origin, 'use_origin': use_origin}
     result = template.render(dict_)
 

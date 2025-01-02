@@ -1,4 +1,4 @@
-"""TrajGeneration Behavior."""
+"""Trajectory Generation Behavior."""
 
 # Copyright 2024 Universidad Politécnica de Madrid
 #
@@ -47,7 +47,7 @@ if TYPE_CHECKING:
     from ..drone_interface_base import DroneInterfaceBase
 
 
-class TrajGenerationBehavior(BehaviorHandler):
+class TrajectoryGenerationBehavior(BehaviorHandler):
     """FollowPath Behavior."""
 
     def __init__(self, drone: 'DroneInterfaceBase') -> None:
@@ -95,7 +95,9 @@ class TrajGenerationBehavior(BehaviorHandler):
         """Get trajectory msg."""
         point_list = []
         if isinstance(path, list):
-            if not path:  # not empty
+            if len(path) > 0 and isinstance(path[0], PoseWithID):
+                return path
+            elif not path:  # not empty
                 raise self.GoalRejected('Goal format invalid')
             if isinstance(path[0], list):
                 point_list = path
@@ -106,7 +108,7 @@ class TrajGenerationBehavior(BehaviorHandler):
         elif isinstance(path, Path):
             point_list = path_to_list(path)
         elif isinstance(path, PoseWithID):
-            return list(path)
+            return [path]
         else:
             raise self.GoalRejected('Goal format invalid')
 
